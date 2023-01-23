@@ -1,8 +1,13 @@
 import json
 import re
+import sys
 
-f = open('gg2013.json')
-data = json.load(f)
+
+json_file = sys.argv[1]
+
+with open(json_file, 'r') as f:   
+        text = f.readline()
+        data = json.loads(text)
 
 def textSplit(dataset):
     for index in range(len(dataset)):
