@@ -7,11 +7,8 @@ def award_names(tweets):
     return award_list
 
 def parse_tweets(tweets, regexp, list=[]):
-    i = 0
     '''Take Tweet and seperate out id and text, search text for regexp, if match then add to dictionary'''
     for tweet in tweets:
-        tweetid = i
-        i = i + 1
         ##maybe add stop list before matching
         match =  re.search(regexp, tweet)
         if(match != None):
