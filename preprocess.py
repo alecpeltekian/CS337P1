@@ -5,12 +5,12 @@ import sys
 
 json_file = sys.argv[1]
 
-with open(json_file, 'r') as f:   
+with open(json_file, 'r', encoding='utf-8', errors='ignore') as f:   
         text = f.readline()
         data = json.loads(text)
-
+print("done")
 def textSplit(dataset):
-    with open('TweetText.txt', 'w') as output:
+    with open('TweetText.txt', 'w', errors='ignore') as output:
         for index in range(len(dataset)):
             for key in dataset[index]:
                 if key == 'text':
