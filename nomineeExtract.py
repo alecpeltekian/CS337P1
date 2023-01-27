@@ -45,9 +45,6 @@
 # "Johny Walker does not take home the Golden Globe for Best Director"]
 # print(extract_entities(sentences, "Best Director"))
 
-
-import spacy
-
 import spacy
 
 def extract_entities(text_list, award_name):
@@ -63,7 +60,7 @@ def extract_entities(text_list, award_name):
                     else:
                         entities[ent.text] = 1
             for token in doc:
-                if token.text.istitle() and token.pos_ == "PROPN":
+                if token.pos_ == "PROPN":
                     if token.text in entities:
                         entities[token.text] += 1
                     else:
@@ -91,13 +88,38 @@ def extract_entities(text_list, award_name):
 # print(entities)
 
 
-text_list = ["I think zac efron deserves best actor",
-"adam sandler is going to get best actor",
-"I hope alec smith wins best actor",
+text_list = ["I think Argo deserves best picture",
+"Please give adam sandler best actor",
+"I hope tom brady wins best loser",
 "If john doe wins best actor I will be so happy",
-"Best actor should definitely go to michael jordan"]
-award_name = "best actor"
+"best actor should definitely go to michael jordan"]
+award_name = "best picture"
 entities = extract_entities(text_list, award_name)
 
-print(entities)
+# print(entities)
 
+
+def extract_person_sentences(sentences):
+    nlp = spacy.load("en_core_web_sm")
+    person_sentences = []
+    for sentence in sentences:
+        doc = nlp(sentence)
+        for ent in doc.ents:
+            if ent.label_ == "PROPN":
+                person_sentences.append(sentence)
+                break
+    return person_sentences
+
+people = extract_person_sentences(text_list)
+
+# print(people)
+
+
+import spacy
+
+nlp = spacy.load("en_core_web_sm")
+doc = nlp("Please give Adam Sandler best actor")
+
+for token in doc:
+    if token.pos_ == "NOUN":
+        print(token.text)
