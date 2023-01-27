@@ -1,46 +1,51 @@
-# import re
-# from collections import Counter
-
-# def get_name_counts(tweets, award_name):
-#     names = []
-#     for tweet in tweets:
-#         # Use regular expressions to search for the award name and any capitalized words after it
-        
-#         match = re.findall(r'\b([A-Z][a-z]+)\b', tweet)
-#         if match:
-#             for m in match:
-#                 if award_name not in m:
-#                     names.append(m)
-#     # Use the Counter class to count the occurrences of each name
-#     name_counts = Counter(names)
-#     return name_counts
-
-
-
-
-# tweets = [
-#     "The Golden Globe for Best Director goes to Martin Scorsese for The Irishman!",
-#     "I can't believe Martin Scorsese won the Golden Globe for Best Director! #TheIrishman",
-#     "Martin Scorsese's The Irishman takes home the Golden Globe for Best Director"
-# ]
-# award_name = "Golden Globe for Best Director"
-# name_counts = get_name_counts(tweets, award_name)
-# print(name_counts)
-
 import spacy
 
-def extract_entities(sentences, awardName):
-    nlp = spacy.load("en_core_web_sm") # load spaCy's pre-trained model
-    entities = []
-    for sentence in sentences:
-        if awardName in sentence:
-            doc = nlp(sentence)
-            for ent in doc.ents:
-                if ent.label_ in ("PERSON", "MOVIE"): # check if entity is a person or movie
-                    entities.append(ent.text)
-    return entities
+def extract_entities(tweet, award):
+    sp = spacy.load("en_core_web_sm")
+    people = {}
+    for tweet in tweets:
+        doc = sp(tweet)
+        if award in tweet:
+            for occ in doc.ents:
+                if occ.label_ in ["PERSON", "MOVIE"]:
+                    if occ.text in people:
+                        people[occ.text] += 1
+                    else:
+                        people[occ.text] = 1
+            for pos in doc:
+                if pos.pos_ == "PROPN":
+                    if pos.text in people:
+                        people[pos.text] += 1
+                    else:
+                        people[pos.text] = 1
+    return people
 
-sentences = ["The Golden Globe for Best Director goes to Tony Liu!",
-"I can't believe Martin Scorsese did not get Best Director!",
-"Johny Walker does not take home the Golden Globe for Best Director"]
-print(extract_entities(sentences, "Best Director"))
+tweets = open("TweetText.txt", "r", errors='ignore')
+
+award = "best picture"
+people = extract_entities(tweets, award)
+print(people[0])
+
+# def textSplit(entities):
+#     with open('nomineeExtract.txt', 'w', errors='ignore') as output:
+#         for index in range(len(entities)):
+#             for key in entities[index]:
+#                 if key == 'text':
+#                     text = entities[index][key]
+#                     output.write('   ')
+#                     output.write(text)
+#                     output.write('\r')
+
+
+
+# print(textSplit(data))
+
+
+# import spacy
+
+# nlp = spacy.load("en_core_web_sm")
+# doc = nlp("Please give Adam Sandler best actor")
+
+# for token in doc:
+#     if token.pos_ == "NOUN":
+#         print(token.text)
