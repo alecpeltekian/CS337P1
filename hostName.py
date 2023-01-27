@@ -42,11 +42,11 @@ x = host_names(tweets)
 
 name, vote = HostVoting(x)
 ind = [vote.index(x) for x in sorted(vote, reverse=True)[:2]]
-#print(name)
 print(name[ind[0]], name[ind[1]])
-#print(x)
 with open('hostnames.txt', 'w') as output:
-    for word in x:
         output.write('   ')
-        output.write(word)
+        output.write(name[ind[0]])
+        output.write('\r')
+        output.write('   ')
+        output.write(name[ind[1]])
         output.write('\r')
