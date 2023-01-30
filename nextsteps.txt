@@ -1,5 +1,2 @@
 write nominees list for all categories and test it to make sure they all work
 regex_list is currently only for winners, need to expand it for nominees and categories somehow
-for nominee list, we need to write a function that will take in a string and output a list of reg expression that we can match to tweets
-  so like "Brad Pitt" --> ["Brad","Pitt","brad","pitt"]
-  or if we could do this with a very good reg experssion and avoid the function all together, that would be good
