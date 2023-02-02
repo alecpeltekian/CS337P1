@@ -10,5 +10,14 @@ class FrameByAward:
     def addWinner(self,winnerName):
         self.winnerName = winnerName
 
+    def visualize(self):
+        print("Award Name: ")
+        print(self.awardName)
+        print("Winner Name: ")
+        print(self.winnerName)
+        print("Nominees")
+        print(self.nomineeList)
+
+
 
 
