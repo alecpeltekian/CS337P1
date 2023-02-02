@@ -23,14 +23,20 @@ def parse_tweets(tweets, regexp, list=[]):
             extracted = re.split(" ", extracted)
             extracted = [x for x in extracted if x not in excluded]
             extracted = " ".join(extracted)
-            list.append(extracted)
-           # doc = NER(extracted)
-        #    final = "Best"
-         #   for token in doc:
-        #            if (token.pos_ == "NOUN"):
-         #               final = final + " " + token.text
-         #   if (len(final) > 5):
-         #       list.append(final)
+            number = len(extracted.strip().split())
+            if number > 3:
+             #   list.append(extracted)
+                doc = NER(extracted)
+                final = "Best"
+                count = 0
+                for word in doc.ents:
+                    if (word.label_ == "PERSON" or word.text == "GoldenGlobes"):
+                        count += 1
+               # for token in doc:
+                #    if (token.pos_ == "NOUN"):
+                #        final = final + " " + token.text
+                if (count == 0):
+                    list.append(extracted)
 
 
     return unique_list(list)

@@ -32,7 +32,7 @@ def HostVoting(hostlist):
     for i in hostlist:
         doc = NER(i)
         for word in doc.ents:
-            if (word.label_ == "PERSON"):
+            if (word.label_ == "PERSON" and word.text != "GoldenGlobes"):
                 if word.text in names:
                     votes[names.index(word.text)] += 1
                 else:
