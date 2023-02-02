@@ -1,0 +1,29 @@
+won.*?([A-Z][a-z]+) 
+wins.*?([A-Z][a-z]+)
+best.*?([A-Z][a-z]+)
+best actor.?([A-Z][a-z]+(?: [A-Z][a-z]+))
+winner.?best actor.?([A-Z][a-z]+(?: [A-Z][a-z]+)*)
+Golden Globe.?best actor.?([A-Z][a-z]+(?: [A-Z][a-z]+)*)
+best actor.?Golden Globe.?([A-Z][a-z]+(?: [A-Z][a-z]+)*)
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best actor.*?Golden Globe
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?wins.?best actor.?Golden Globe
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?takes.?best actor.?Golden Globe
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?took.?best actor.?Golden Globe
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?won.?best actor.?Golden Globe
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?was.?best actor.?Golden Globe
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?at.?best actor.?Golden Globe
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?for.?best actor.?Golden Globe
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?at.*?Golden Globe
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?award.?at.?Golden Globe
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?in.?best actor.?at.*?Golden Globe
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?Golden Globe.*?winner
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?Golden Globe.*?champion
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?Golden Globe.?champion.?winner
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?at.?Golden Globe.?champion
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?Golden Globe.?champion.?at
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?Golden Globe.?champion.?award
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?Golden Globe.?champion.?winner.*?award
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?Golden Globe.?winner.?champion.*?award
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?winner.?Golden Globe.?champion.*?award
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?winner.?champion.?Golden Globe.*?award
+([A-Z][a-z]+(?: [A-Z][a-z]+)).?best.?actor.?champion.?winner.?Golden Globe.*?award

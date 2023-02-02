@@ -1,0 +1,80 @@
+import spacy
+import re
+from thefuzz import fuzz
+from imdb import IMDb
+import threading
+
+res = {}
+ia = IMDb()
+
+stopWord = [
+    "RT",
+    "Golden Globes",
+    "#GoldenGlobes",
+    "golden globes",
+    "golden",
+    "globes",
+    "Golden",
+    "Globes",
+    "GoldenGlobes",
+    "#",
+    "@goldenglobes",
+    "best picture",
+    "motion picture",
+    "congratulations",
+    "@huffpost",
+    "drama",
+]
+
+def searchMovie(title,ia,res):
+    try: 
+        movie = ia.search_movie(title)
+        if not movie:
+            return 
+        movie = movie[0]
+        if movie.has_key('year'):
+            year = movie['year']
+            print(f"{title}: {year}")
+            if int(year) <= 2013:
+                if fuzz.token_sort_ratio(title,movie.get('title').lower()) > 85:
+                    print("here")
+                    res[movie.get('title').lower()] = 1 + res.get(movie.get('title').lower(),0)
+    except Exception:
+        print(f"{title} failed")
+
+def extract_entities_pronouns(tweets,regex,res,ia):
+    sp = spacy.load("en_core_web_sm")
+    nameList = []
+    for tweet in tweets:
+        if not re.search(regex,tweet,re.IGNORECASE):
+            continue
+        doc = sp(tweet)
+        new = []
+        for pos in doc:
+            if (pos.pos_ in ["PROPN","NOUN","ADP"] and pos.text not in stopWord):
+                new.append(pos.text)
+            else:
+                if new:
+                    nameList.append((" ".join(new)).lower())
+                    new = []
+        #in case it ends in a movie name
+        if new:
+            nameList.append((" ".join(new)).lower())
+    
+    print(f"searching through {len(nameList)} for possible nominees")
+
+    processes = []
+    for i in range(0,len(nameList),50):
+        print(i)
+        for j in range(50):
+            if i+j >= len(nameList):
+                break
+            name = nameList[i+j]
+            p = threading.Thread(target = searchMovie,args=[name,ia,res])
+            p.start()
+            processes.append(p)
+
+        for p in processes:
+            p.join()
+
+    return res
