@@ -223,9 +223,9 @@ def getHosts():
     return (name[ind[0]], name[ind[1]])
 
 
-print(getNominees("best drama"))
-
-print(getNominees("best drama series"))
+#print(getNominees("best drama"))
+print(getBestandWorstDressed())
+#print(getNominees("best drama series"))
 
 # nom1 = ["Anne Hathaway", "Amy Adams", "Helen Hunt", "Nicole Kidman"]
 # nom2 = ["Christopher Waltz","Alan Arkin","Leonardo DiCaprio","Tommy Lee Jones","Phillip Seymour Hoffman"]

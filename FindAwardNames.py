@@ -53,9 +53,17 @@ def parse_tweets(tweets, regexp, list=[]):
 def unique_list(list):
     out = []
     for word in list:
-        if word not in out:
+        if ((word not in out) and compare_to_list(out, word)):
             out.append(word)
     return out
+
+def compare_to_list(list, word):
+    ret = True
+    for i in range(len(list)):
+        if (fuzz.ratio(word, list[i]) > 80):
+            ret = False
+    return ret
+
 
 with open('TweetText.txt','r') as f:
     tweets = f.read().splitlines()
