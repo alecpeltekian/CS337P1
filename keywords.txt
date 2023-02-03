@@ -1,0 +1,12 @@
+actor
+actress
+director
+song
+score
+television
+picture
+supporting
+film
+movie
+screenplay
+award

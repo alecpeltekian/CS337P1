@@ -13,6 +13,9 @@ def award_names(tweets):
 with open("terminatingList.txt") as f:
     excluded = f.read().splitlines()
 
+with open("keywords.txt") as f:
+    keywords = f.read().splitlines()
+
 def parse_tweets(tweets, regexp, list=[]):
     '''Take Tweet and seperate out id and text, search text for regexp, if match then add to dictionary'''
     for tweet in tweets:
@@ -23,19 +26,23 @@ def parse_tweets(tweets, regexp, list=[]):
             extracted = re.split(" ", extracted)
             extracted = [x for x in extracted if x not in excluded]
             extracted = " ".join(extracted)
+            extracted = extracted.lower()
             number = len(extracted.strip().split())
-            if number > 3:
+            if (number > 3 and number < 8):
              #   list.append(extracted)
                 doc = NER(extracted)
-                final = "Best"
                 count = 0
+                keycount = 0
                 for word in doc.ents:
-                    if (word.label_ == "PERSON" or word.text == "GoldenGlobes"):
+                    if (word.label_ == "PERSON" or word.text == "goldenglobes"):
                         count += 1
+                for word in doc:
+                    if (word.text in keywords):
+                        keycount += 1
                # for token in doc:
                 #    if (token.pos_ == "NOUN"):
                 #        final = final + " " + token.text
-                if (count == 0):
+                if (count == 0 and keycount > 0):
                     list.append(extracted)
 
 
