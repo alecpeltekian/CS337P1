@@ -12,6 +12,32 @@ import spacy
 # import multiprocessing
 # import threading
 
+dictAwardToRegex = {
+    "best drama": r"best.*drama",
+    "best musical/comedy": r"best.*(musical|comedy)",
+    "best drama actor": r"best.*(actor.*drama|drama.*actor)",
+    "best drama actress": r"best.*(actress.*drama|drama.*actress)",
+    "best comedy/musical actress": r"best.*(actress.*(comedy|musical)|(comedy|musical).*actress)",
+    "best comedy/musical actor": r"best.*(actor.*(comedy|musical)|(comedy|musical).*actor)",
+    "best supporting actress": r"(best\s+)?support.*actress",
+    "best supporting actor": r"(best\s+)?support.*actor",
+    "best director": r"best\s+director",
+    "best screenplay": r"best\s+screenplay",
+    "best animated picture": r"(best\s+)?animated\s+picture",
+    "best non-english picture": r"(best\s+)?non-english\s+picture",
+    "best score": r"best\s+director",
+    "best song": r"best\s+director",
+    "best drama series": r"best\s+drama\s+series",
+    "best musical/comedy series": r"best\s+(musical\/comedy|musical|comedy)",
+    "best limited series": r"best\s+limited\s+series",
+    "best limited series actress": r"best\s+limited\s+series\s+actress",
+    "best limited series actor": r"best\s+limited\s+series\s+actor",
+    "best television drama actress": r"best\s+television\s+drama\s+actress",
+    "best television drama actor": r"best\s+television\s+drama\s+actor",
+    "best television musical/comedy actor": r"best television (musical\/comedy|comedy\/musical|musical and comedy) actor",
+    "best television musical/comedy actress": r"best television (musical\/comedy|comedy\/musical|musical and comedy) actress",
+    "Cecil B. deMille": r"Cecil.*deMille|deMille.*Cecil"
+}
 
 import re
 with open('TweetText.txt', 'r') as input_file:
@@ -50,8 +76,21 @@ def extractPerson(sentences):
 
 
 people = extractPerson(presTweets)
-print(people)
+
 # print(len(people))
+
+def extractPresenter(award):
+    newlist = []
+    for index in people:
+        newlist.append((index.lower()))
+        presenters = []
+        for i in newlist:
+            if re.findall(dictAwardToRegex[award], i):
+                presenters.append(i)
+
+    return presenters
+
+print(extractPresenter("best screenplay"))
 
 
 # def count_names(names):
@@ -71,6 +110,8 @@ print(people)
 
 
 # print(count_names(people))
+
+
 """
 pseudocode
 
