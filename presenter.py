@@ -1,16 +1,5 @@
 import re
-import collections
-import json
-import sys
-import numpy as np
-# from scipy.stats import norm
-# import matplotlib.pyplot as plt
 import spacy
-# import statistics
-# from imdb import IMDb, IMDbError
-# from thefuzz import fuzz
-# import multiprocessing
-# import threading
 
 dictAwardToRegex = {
     "best drama": r"best.*drama",
@@ -55,7 +44,6 @@ def filter_tweets(regexp,related=True):
     return tweetlist
 
 def get_presenter_tweets():
-    # find tweets relating to presenting
     regexp = re.compile('.+(are )?present(er|ed|ing|s|\s).+')
     present_tweets = filter_tweets(regexp)
     return present_tweets
@@ -90,7 +78,23 @@ def extractPresenter(award):
 
     return presenters
 
-print(extractPresenter("best screenplay"))
+listfinal = extractPresenter("best screenplay")
+
+import spacy
+
+def extractFinal(list):
+    nlp = spacy.load("en_core_web_sm")
+    finalPeople = []
+    for i in list:
+        if "present" in i:
+            cut1 = i.split("present")[0]
+            doc = nlp(cut1)
+            for ent in doc.ents:
+                if ent.label_== "PERSON":
+                    print(f"PROPN: {ent.text}")
+    return finalPeople
+
+print(extractFinal(listfinal))
 
 
 # def count_names(names):
