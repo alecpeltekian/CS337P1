@@ -2,6 +2,8 @@ import re
 import numpy as np
 import spacy
 from spacy import displacy
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 
 NER = spacy.load("en_core_web_sm")
 
@@ -60,8 +62,15 @@ with open('TweetText.txt','r') as f:
 
 x = award_names(tweets)
 
+y = []
+
+for i in range(len(x) - 1):
+    if (fuzz.ratio(x[i], x[i+1]) < 60):
+        y.append(x[i])
+
+
 with open('awardnames.txt', 'w') as output:
-    for word in x:
+    for i in range(len(y)):
         output.write('   ')
-        output.write(word)
+        output.write(y[i])
         output.write('\r')
