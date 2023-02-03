@@ -4,20 +4,19 @@ import json
 import sys
 import numpy as np
 from scipy.stats import norm
-import matplotlib.pyplot as plt
 import spacy
-from spacy import displacy
 import statistics
-from imdb import IMDb, IMDbError
+from imdb import IMDb
 from thefuzz import fuzz
 from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
-import multiprocessing
-import threading
 from nomineeHelper import *
 from winnerHelper import *
 from bestandworstdressHelper import *
 from hostsHelper import *
+from presenterHelper import *
+from awardHelper import *
+
+
 
 
 dictAwardToRegex = {
@@ -222,9 +221,56 @@ def getHosts():
     ind = [vote.index(x) for x in sorted(vote, reverse=True)[:2]]
     return (name[ind[0]], name[ind[1]])
 
+def getAwards():
+
+    x = award_names(tweets)
+
+    y = []
+
+    for i in range(len(x) - 1):
+        if (fuzz.ratio(x[i], x[i+1]) < 60):
+            y.append(x[i])
+
+    return y
+
+def getPresenters(award):
+    lst = extractPresenter(award)
+    x = extractFinal(lst)
+    return x
+
+
+def main():
+    hosts = getHosts()
+    print(f"Host: {hosts}")
+    award_list = getAwards()
+    jsonList = []
+    hostJson = {}
+    hostJson["hosts"] = hosts
+    jsonList.append(hostJson)
+
+    jsonFinal = json.dumps(jsonList)
+    print(jsonFinal)
+    # jsonList.append("\n")
+    # jsonList.append("\n")
+    # jsonList.append("\n")
+    # for award in award_list:
+    #     print(f"Award: {award}")
+    #     Nominee_List = getNominees(award)
+    #     Presenter_List = getPresenters(award)
+    #     print(f"Presenters: {Presenter_List}")
+    #     print(f"Nominees: {Nominee_List}")
+    #     winner = getWinners(Nominee_List)
+    #     print(f"Winner: {winner}")
+
+main()
+
+        
+    
+
+
 
 #print(getNominees("best drama"))
-print(getBestandWorstDressed())
+# print(getBestandWorstDressed())
 #print(getNominees("best drama series"))
 
 # nom1 = ["Anne Hathaway", "Amy Adams", "Helen Hunt", "Nicole Kidman"]
