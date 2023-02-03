@@ -6,9 +6,12 @@ import numpy as np
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 import spacy
+from spacy import displacy
 import statistics
 from imdb import IMDb, IMDbError
 from thefuzz import fuzz
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 import multiprocessing
 import threading
 from nomineeHelper import *
