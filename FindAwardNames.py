@@ -36,18 +36,13 @@ def parse_tweets(tweets, regexp, list=[]):
                 count = 0
                 keycount = 0
                 for word in doc.ents:
-                    if (word.label_ == "PERSON" or word.text == "goldenglobes"):
+                    if (word.label_ == "PERSON" or word.text == "goldenglobes" or word.text == "golden"):
                         count += 1
                 for word in doc:
                     if (word.text in keywords):
                         keycount += 1
-               # for token in doc:
-                #    if (token.pos_ == "NOUN"):
-                #        final = final + " " + token.text
                 if (count == 0 and keycount > 0):
                     list.append(extracted)
-
-
     return unique_list(list)
 
 def unique_list(list):
