@@ -7,13 +7,15 @@ Results printed to terminal and stored in json file
 
 Required packages in requirements.txt
 
-Spacy, re, json, sys, fuzz, numpy, heapq
+Spacy, re, json, sys, fuzzywuzzy, thefuzz, numpy, heapq
 
 Spacy: pip install -U spacy
 
 re: pip install regex
 
-fuzz: pip install fuzzywuzzy
+fuzzywuzzy: pip install fuzzywuzzy
+
+thefuzz: pip install thefuzz
 
 numpy: pip install numpy
 
