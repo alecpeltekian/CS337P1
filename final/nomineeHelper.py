@@ -1,7 +1,6 @@
 import spacy
 import re
 from thefuzz import fuzz
-from imdb import IMDb
 import threading
 import requests
 from collections import Counter

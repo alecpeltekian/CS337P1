@@ -264,7 +264,9 @@ def main():
     print(getBestandWorstDressed())
         
     jsonFinal = json.dumps(jsonDict)
-    print(jsonFinal)
+    with open("results.json", "w") as outfile:
+        outfile.write(jsonFinal)
+    #print(jsonFinal)
 
 main()
 
