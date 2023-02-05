@@ -1,5 +1,5 @@
 # CS337P1
-
+Solution located in "final" folder.
 To run: python gg_api.py {tweet file}
 ex: python gg_api.py gg2013.json
 
