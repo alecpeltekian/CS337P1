@@ -95,6 +95,19 @@ def extractFinal(list):
 
     return finalPeople
 
+def gettingPresenter(award):
+    regex,entity = dictAwardToRegex[award]
+    releventTweets = []
+    for tweet in tweets:
+        if re.search(regex,tweet["text"]):
+            releventTweets.append(tweet["text"])
+    presentingTweets = []
+    for tweet in releventTweets:
+        if re.search(r'\b(present|ed|ing)\b',tweet):
+            presentingTweets.append(tweet)
+    print(presentingTweets)
+
+
 
 
 

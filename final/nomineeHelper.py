@@ -3,6 +3,8 @@ import re
 from thefuzz import fuzz
 from imdb import IMDb
 import threading
+import requests
+from collections import Counter
 
 res = {}
 ia = IMDb()
@@ -24,30 +26,61 @@ stopWord = [
     "congratulations",
     "@huffpost",
     "drama",
+    "amp",
+    "pantsuit",
+    "luv u",
+    "caraca",
+    "flu",
+    "oscars",
+    "Oscar"
+    "Amy Poehler",
+    "Tina Fey",
+
 ]
 
-def searchMovie(title,ia,res):
-    try: 
-        movie = ia.search_movie(title)
-        if not movie:
-            return 
-        movie = movie[0]
-        if movie.has_key('year'):
-            year = movie['year']
-            print(f"{title}: {year}")
-            if int(year) <= 2013:
-                if fuzz.token_sort_ratio(title,movie.get('title').lower()) > 85:
-                    print("here")
-                    res[movie.get('title').lower()] = 1 + res.get(movie.get('title').lower(),0)
-    except Exception:
-        print(f"{title} failed")
+with open('males.txt', 'r') as input_file:
+    males = input_file.read().splitlines()
 
-def extract_entities_pronouns(tweets,regex,res,ia):
+
+
+with open('females.txt', 'r') as input_file:
+    females = input_file.read().splitlines()
+
+def searchMovie(title,ia,res):
+    request = f"https://www.omdbapi.com/?apikey=54039ca8&t={title}"
+    response = requests.get(request)
+    if response.status_code != 200:
+        return
+    data = response.json()
+    if data['Response'] == "False":
+        return
+    year = data['Year'][:4]
+    if 2007 <= int(year) <= 2013:
+        if fuzz.token_sort_ratio(title,data['Title'].lower()) > 85 and data['Title'].lower() not in stopWord:
+            print("here")
+            res[data['Title'].lower()] = 1 + res.get(data['Title'].lower(),0)
+
+def extract_people(tweets,gender):
     sp = spacy.load("en_core_web_sm")
     nameList = []
     for tweet in tweets:
-        if not re.search(regex,tweet,re.IGNORECASE):
-            continue
+        doc = sp(tweet)
+        for ent in doc.ents:
+            if ent.label_== "PERSON" and ent.text not in stopWord:
+                firstName = ent.text.split(" ")[0] if " " in ent.text else ent.text
+                if gender == 2 and firstName not in males:
+                    continue
+                if gender == 3 and firstName not in females:
+                    continue
+                nameList.append(ent.text)
+    counter = Counter(nameList)
+    return counter
+
+
+def extract_entities_pronouns(tweets,res):
+    sp = spacy.load("en_core_web_sm")
+    nameList = []
+    for tweet in tweets:
         doc = sp(tweet)
         new = []
         for pos in doc:
@@ -64,9 +97,9 @@ def extract_entities_pronouns(tweets,regex,res,ia):
     print(f"searching through {len(nameList)} for possible nominees")
 
     processes = []
-    for i in range(0,len(nameList),50):
+    for i in range(0,len(nameList),200):
         print(i)
-        for j in range(50):
+        for j in range(200,2):
             if i+j >= len(nameList):
                 break
             name = nameList[i+j]

@@ -2,11 +2,7 @@ import re
 import collections
 import json
 import sys
-import numpy as np
-from scipy.stats import norm
 import spacy
-import statistics
-from imdb import IMDb
 from thefuzz import fuzz
 from fuzzywuzzy import fuzz
 from nomineeHelper import *
@@ -16,34 +12,42 @@ from hostsHelper import *
 from presenterHelper import *
 from awardHelper import *
 
-
+MOVIE = 1
+MALE = 2
+FEMALE = 3
+BOTH = 4
+# males = None
+# with open('males.txt', 'r') as input_file:
+#     males = input_file.readlines()
+#     males = [male.strip() for male in males]
+#     print(males)
 
 
 dictAwardToRegex = {
-    "best drama": r"best.*drama",
-    "best musical/comedy": r"best.*(musical|comedy)",
-    "best drama actor": r"best.*(actor.*drama|drama.*actor)",
-    "best drama actress": r"best.*(actress.*drama|drama.*actress)",
-    "best comedy/musical actress": r"best.*(actress.*(comedy|musical)|(comedy|musical).*actress)",
-    "best comedy/musical actor": r"best.*(actor.*(comedy|musical)|(comedy|musical).*actor)",
-    "best supporting actress": r"(best\s+)?support.*actress",
-    "best supporting actor": r"(best\s+)?support.*actor",
-    "best director": r"best\s+director",
-    "best screenplay": r"best\s+screenplay",
-    "best animated picture": r"(best\s+)?animated\s+picture",
-    "best non-english picture": r"(best\s+)?non-english\s+picture",
-    "best score": r"best\s+director",
-    "best song": r"best\s+director",
-    "best drama series": r"best\s+drama\s+series",
-    "best musical/comedy series": r"best\s+(musical\/comedy|musical|comedy)",
-    "best limited series": r"best\s+limited\s+series",
-    "best limited series actress": r"best\s+limited\s+series\s+actress",
-    "best limited series actor": r"best\s+limited\s+series\s+actor",
-    "best television drama actress": r"best\s+television\s+drama\s+actress",
-    "best television drama actor": r"best\s+television\s+drama\s+actor",
-    "best television musical/comedy actor": r"best television (musical\/comedy|comedy\/musical|musical and comedy) actor",
-    "best television musical/comedy actress": r"best television (musical\/comedy|comedy\/musical|musical and comedy) actress",
-    "Cecil B. deMille": r"Cecil.*deMille|deMille.*Cecil"
+    "best drama": [r"best\s+motion\s+picture\s+drama",1],
+    "best musical/comedy": [r"best.*(musical|comedy)",1],
+    "best drama actor": [r"best\s+drama\s+actor",2],
+    "best drama actress": [r"best\s+actress",3],
+    "best comedy/musical actress": [r"best\s+actress\s+(musical|comedy)",3],
+    "best comedy/musical actor": [r"best\s+actor+(musical|comedy)",2],
+    "best supporting actress": [r"best\s+supporting\s+actress",3],
+    "best supporting actor": [r"best\s+supporting\s+actor",2],
+    "best director": [r"best\s+director",4],
+    "best screenplay": [r"best\s+screenplay",4],
+    "best animated picture": [r"best\s+animated\s+picture",1],
+    "best non-english picture": [r"best\s+non-english\s+picture",1],
+    "best score": [r"best\s+director",4],
+    "best song": [r"best\s+song",1],
+    "best drama series": [r"best\s+drama\s+series",1],
+    "best musical/comedy series": [r"best\s+comedy\s+series",1],
+    "best limited series": [r"best\s+limited\s+series",1],
+    "best limited series actress": [r"best\s+limited\s+series\s+actress",3],
+    "best limited series actor": [r"best\s+limited\s+series\s+actor",2],
+    "best television drama actress": [r"best\s+television\s+drama\s+actress",3],
+    "best television drama actor": [r"best\s+television\s+drama\s+actor",2],
+    "best television musical/comedy actor": [r"best\s+television\s+comedy\s+actor",2],
+    "best television musical/comedy actress": [r"best\s+television\s+comedy\s+actress",3],
+    "Cecil B. deMille": [r"Cecil.*deMille|deMille.*Cecil",4]
 }
 
 
@@ -73,21 +77,35 @@ json_file = sys.argv[1]
 print("going through tweets")
 
 with open(json_file, 'r', encoding='utf-8', errors='ignore') as f:   
-        text = f.readline()
-        dataset = json.loads(text)
+    text = f.readline()
+    dataset = json.loads(text)
 
-print("finding the announcement time for each award")
+print("doing some preprocessing")
 
-dictAwardMentionTimes = collections.defaultdict(list)
-for tweet in dataset:
-    for award,regex in dictAwardToRegex.items():
-        if re.search(regex, tweet["text"]):
-            dictAwardMentionTimes[award].append(tweet["timestamp_ms"])
+dictAwardtoTweets = collections.defaultdict(list)
+for award,lst in dictAwardToRegex.items():
+    regex = lst[0]
+    i = 0
+    while i < len(dataset):
+        if re.search(regex,dataset[i]["text"]):
+            for j in range(max(0,i-200),min(i+200,len(dataset))):
+            #for tweet in dataset[max(i-200,0):min(i+200,len(dataset))]:
+                dictAwardtoTweets[award].append(dataset[j]["text"])
+            i+=400
+        else:
+            i+=1
 
-dictAwardtoAnnoucetime = {}
-for award, listOfTimes in dictAwardMentionTimes.items():
-    announcementTime = statistics.median(listOfTimes)
-    dictAwardtoAnnoucetime[award] = announcementTime
+
+
+# for tweet in dataset:
+#     for award,regex in dictAwardToRegex.items():
+#         if re.search(regex, tweet["text"]):
+#             dictAwardMentionTimes[award].append(tweet["timestamp_ms"])
+
+# dictAwardtoAnnoucetime = {}
+# for award, listOfTimes in dictAwardMentionTimes.items():
+#     announcementTime = statistics.mode(listOfTimes)
+#     dictAwardtoAnnoucetime[award] = announcementTime
 
 
 print("importing different lists into frame")
@@ -127,30 +145,43 @@ print("finished all preprocessing")
 #awardname -> listofNominees
 def getNominees(award):
     res = {}
-    ia = IMDb()
-    if award not in dictAwardtoAnnoucetime:
-        print(f"Please input an award from {dictAwardtoAnnoucetime.keys()}")
+    if award not in dictAwardtoTweets:
+        print(f"Please input an award from {dictAwardtoTweets.keys()}")
         return
 
-    regex = dictAwardToRegex[award]
+    regex,entity = dictAwardToRegex[award]
 
-    releventTweets = []
-    announcementTime = dictAwardtoAnnoucetime[award]
-    for i in range(len(dataset)):
-        time = int(dataset[i]["timestamp_ms"])
-        if time < announcementTime-100000:
-            continue
-        if time > announcementTime+100000:
-            break
-        releventTweets.append(dataset[i]["text"])
+    # releventTweets = []
+    # announcementTime = dictAwardtoAnnoucetime[award]
+    # for i in range(len(dataset)):
+    #     time = int(dataset[i]["timestamp_ms"])
+    #     if time < announcementTime-100000:
+    #         continue
+    #     if time > announcementTime+100000:
+    #         break
+    #     releventTweets.append(dataset[i]["text"])
+
+    releventTweets = dictAwardtoTweets[award]
 
     print(f"scanning through {len(releventTweets)} tweets for nominees \n")
+    if entity == MOVIE:
+        res = extract_entities_pronouns(releventTweets,res)
+    else:
+        res = extract_people(releventTweets,entity)
+    res = sorted(res.items(), key=lambda x: x[1], reverse=True)
 
-    res = extract_entities_pronouns(releventTweets,regex,res,ia)
+    result = []
+    for key,val in res:
+        result.append(key)
 
-    #res = [k for k, v in sorted(res.items(), key=lambda x: x[1])][-1]
+    return ("NOMINEES:",result[:15])
 
-    return ("NOMINEES:",res.keys())
+#print(getNominees("best drama"))
+print(getNominees("best drama actor"))
+print(getNominees("best drama actress"))
+print(getNominees("best comedy/musical actress"))
+# print(getNominees("best comedy/musical actor"))
+print(getNominees("best director"))
 
 #None -> listOfBestMoment
 def getBestMoment():
@@ -184,7 +215,8 @@ def getBestMoment():
     return bestMomentTweets
 
 #listofNominees->winner
-def getWinners(nomineeList, entity):
+def getWinners(nomineeList):
+    entity = isPersonMovie(nomineeList)
     winnerTweets = []
     for tweet in dataset:
         for regex in regexWinnerList:
@@ -234,10 +266,12 @@ def getAwards():
     return y
 
 def getPresenters(award):
+    return gettingPresenter(award)
     lst = extractPresenter(award)
     x = extractFinal(lst)
     return x
 
+print(getPresenters("best drama"))
 
 def main():
     hosts = getHosts()
@@ -262,7 +296,7 @@ def main():
     #     winner = getWinners(Nominee_List)
     #     print(f"Winner: {winner}")
 
-main()
+#main()
 
         
     
