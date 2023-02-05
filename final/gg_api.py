@@ -36,15 +36,15 @@ dictAwardToRegex = {
     "best drama series": [r"best\s+drama\s+series",1],
     "best musical/comedy series": [r"best\s+comedy\s+series",1],
     "best limited series": [r"best\s+limited\s+series",1],
-    "best limited series actress": [r"best\s+limited\s+series\s+actress",3],
-    "best limited series actor": [r"best\s+limited\s+series\s+actor",2],
-    "best television drama actress": [r"best\s+television\s+drama\s+actress",3],
-    "best television drama actor": [r"best\s+television\s+drama\s+actor",2],
-    "best television musical/comedy actor": [r"best\s+television\s+comedy\s+actor",2],
-    "best television musical/comedy actress": [r"best\s+television\s+comedy\s+actress",3],
+    "best limited series actress": [r"best\s+limited\s+series",3],
+    "best limited series actor": [r"best\s+limited\s+series",2],
+    "best television drama actress": [r"best\s+television\s+drama",3],
+    "best television drama actor": [r"best\s+television\s+drama",2],
+    "best television musical/comedy actor": [r"best\s+television\s+comedy",2],
+    "best television musical/comedy actress": [r"best\s+television\s+comedy",3],
     "Cecil B. deMille": [r"Cecil.*deMille|deMille.*Cecil",4],
-    "Best Supporting TV Actress": [r"best\s+supporting\s+tv\s+actress",3],
-    "Best Supporting TV Actor": [r"best\s+supporting\s+tv\s+actor",2]
+    "best supporting TV actress": [r"best\s+supporting\s+tv",3],
+    "best supporting TV actor": [r"best\s+supporting\s+tv",2]
 }
 
 
@@ -244,8 +244,11 @@ def main():
         jsonDict[award] = {}
         print(f"Award: {award}")
         Nominee_List = getNominees(award)
+        Presenter_List = getPresenters(award)
         if not Nominee_List:
-            print(f"Sorry not enough information for {award}")
+            print(f"Presenters: {Presenter_List}")
+            jsonDict[award]["Presenter"] = Presenter_List
+            print(f"No more information for {award}")
             continue
 
         Presenter_List = getPresenters(award)

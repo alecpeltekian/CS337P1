@@ -25,7 +25,9 @@ dictAwardToRegex = {
     "best television drama actor": r"best\s+television\s+drama\s+actor",
     "best television musical/comedy actor": r"best television (musical\/comedy|comedy\/musical|musical and comedy) actor",
     "best television musical/comedy actress": r"best television (musical\/comedy|comedy\/musical|musical and comedy) actress",
-    "Cecil B. deMille": r"Cecil.*deMille|deMille.*Cecil"
+    "Cecil B. deMille": r"Cecil.*deMille|deMille.*Cecil",
+    "best supporting TV actress": r"best\s+supporting\s+tv\s+actress",
+    "best supporting TV actor": r"best\s+supporting\s+tv\s+actor"
 }
 
 import re
@@ -95,17 +97,7 @@ def extractFinal(list):
 
     return finalPeople
 
-def gettingPresenter(award):
-    regex,entity = dictAwardToRegex[award]
-    releventTweets = []
-    for tweet in tweets:
-        if re.search(regex,tweet["text"]):
-            releventTweets.append(tweet["text"])
-    presentingTweets = []
-    for tweet in releventTweets:
-        if re.search(r'\b(present|ed|ing)\b',tweet):
-            presentingTweets.append(tweet)
-    print(presentingTweets)
+
 
 
 
