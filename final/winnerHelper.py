@@ -31,7 +31,6 @@ def isPersonMovie(lst):
                 count+=1
                 break
 
-    print(count)
     if count >=3:
         return 2
     else:

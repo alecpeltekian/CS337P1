@@ -16,11 +16,6 @@ MOVIE = 1
 MALE = 2
 FEMALE = 3
 BOTH = 4
-# males = None
-# with open('males.txt', 'r') as input_file:
-#     males = input_file.readlines()
-#     males = [male.strip() for male in males]
-#     print(males)
 
 
 dictAwardToRegex = {
@@ -47,7 +42,9 @@ dictAwardToRegex = {
     "best television drama actor": [r"best\s+television\s+drama\s+actor",2],
     "best television musical/comedy actor": [r"best\s+television\s+comedy\s+actor",2],
     "best television musical/comedy actress": [r"best\s+television\s+comedy\s+actress",3],
-    "Cecil B. deMille": [r"Cecil.*deMille|deMille.*Cecil",4]
+    "Cecil B. deMille": [r"Cecil.*deMille|deMille.*Cecil",4],
+    "Best Supporting TV Actress": [r"best\s+supporting\s+tv\s+actress",3],
+    "Best Supporting TV Actor": [r"best\s+supporting\s+tv\s+actor",2]
 }
 
 
@@ -96,18 +93,6 @@ for award,lst in dictAwardToRegex.items():
             i+=1
 
 
-
-# for tweet in dataset:
-#     for award,regex in dictAwardToRegex.items():
-#         if re.search(regex, tweet["text"]):
-#             dictAwardMentionTimes[award].append(tweet["timestamp_ms"])
-
-# dictAwardtoAnnoucetime = {}
-# for award, listOfTimes in dictAwardMentionTimes.items():
-#     announcementTime = statistics.mode(listOfTimes)
-#     dictAwardtoAnnoucetime[award] = announcementTime
-
-
 print("importing different lists into frame")
 
 with open("terminatingList.txt") as f:
@@ -133,37 +118,19 @@ print("finished all preprocessing")
 
 
 
-
-
-
-
-
-
-
-
-
 #awardname -> listofNominees
 def getNominees(award):
     res = {}
     if award not in dictAwardtoTweets:
-        print(f"Please input an award from {dictAwardtoTweets.keys()}")
-        return
+        return None
 
     regex,entity = dictAwardToRegex[award]
 
-    # releventTweets = []
-    # announcementTime = dictAwardtoAnnoucetime[award]
-    # for i in range(len(dataset)):
-    #     time = int(dataset[i]["timestamp_ms"])
-    #     if time < announcementTime-100000:
-    #         continue
-    #     if time > announcementTime+100000:
-    #         break
-    #     releventTweets.append(dataset[i]["text"])
 
     releventTweets = dictAwardtoTweets[award]
+    if len(releventTweets) > 700:
+        releventTweets = releventTweets[(len(releventTweets)//2)-350:(len(releventTweets)//2)+350]
 
-    print(f"scanning through {len(releventTweets)} tweets for nominees \n")
     if entity == MOVIE:
         res = extract_entities_pronouns(releventTweets,res)
     else:
@@ -174,14 +141,7 @@ def getNominees(award):
     for key,val in res:
         result.append(key)
 
-    return ("NOMINEES:",result[:15])
-
-#print(getNominees("best drama"))
-print(getNominees("best drama actor"))
-print(getNominees("best drama actress"))
-print(getNominees("best comedy/musical actress"))
-# print(getNominees("best comedy/musical actor"))
-print(getNominees("best director"))
+    return result[:5]
 
 #None -> listOfBestMoment
 def getBestMoment():
@@ -230,9 +190,9 @@ def getWinners(nomineeList):
     dictt = {}
     for tweet in winnerTweets:
         for nominee, regex in nomineeDict.items():
-            if re.search(regex,tweet):
+            if re.search(regex,tweet,re.IGNORECASE):
                 dictt[nominee] = 1 + dictt.get(nominee,0)
-    return ("Winner",max(dictt, key=dictt.get))
+    return max(dictt, key=dictt.get)
 
 #none ->best and worst dressed
 def getBestandWorstDressed():
@@ -266,62 +226,49 @@ def getAwards():
     return y
 
 def getPresenters(award):
-    return gettingPresenter(award)
     lst = extractPresenter(award)
     x = extractFinal(lst)
     return x
 
-print(getPresenters("best drama"))
 
 def main():
     hosts = getHosts()
     print(f"Host: {hosts}")
     award_list = getAwards()
-    jsonList = []
-    hostJson = {}
-    hostJson["hosts"] = hosts
-    jsonList.append(hostJson)
+    print(f"Awards: {award_list}")
+    jsonDict = {}
+    jsonDict["Host"] = hosts
 
-    jsonFinal = json.dumps(jsonList)
+    for award in dictAwardToRegex.keys():
+        print("\n")
+        jsonDict[award] = {}
+        print(f"Award: {award}")
+        Nominee_List = getNominees(award)
+        if not Nominee_List:
+            print(f"Sorry not enough information for {award}")
+            continue
+
+        Presenter_List = getPresenters(award)
+        winner = getWinners(Nominee_List)
+        print(f"Presenters: {Presenter_List}")
+        print(f"Nominees: {Nominee_List}")
+        print(f"Winner: {winner}")
+        jsonDict[award]["Presenter"] = Presenter_List
+        jsonDict[award]["Nominees"] = Nominee_List
+        jsonDict[award]["Winner"] = winner
+
+    print(getBestMoment())
+    print(getBestandWorstDressed())
+        
+    jsonFinal = json.dumps(jsonDict)
     print(jsonFinal)
-    # jsonList.append("\n")
-    # jsonList.append("\n")
-    # jsonList.append("\n")
-    # for award in award_list:
-    #     print(f"Award: {award}")
-    #     Nominee_List = getNominees(award)
-    #     Presenter_List = getPresenters(award)
-    #     print(f"Presenters: {Presenter_List}")
-    #     print(f"Nominees: {Nominee_List}")
-    #     winner = getWinners(Nominee_List)
-    #     print(f"Winner: {winner}")
 
-#main()
+main()
 
         
     
 
 
-
-#print(getNominees("best drama"))
-# print(getBestandWorstDressed())
-#print(getNominees("best drama series"))
-
-# nom1 = ["Anne Hathaway", "Amy Adams", "Helen Hunt", "Nicole Kidman"]
-# nom2 = ["Christopher Waltz","Alan Arkin","Leonardo DiCaprio","Tommy Lee Jones","Phillip Seymour Hoffman"]
-# nom3 = ["Brave","Frankenweenie","Hotel Transylvania","Rise of the Guardians","Wreck-It Ralph"]
-# nom4 = ["Homeland","Breaking Bad","Boardwalk Empire","Downton Abbey","The Newsroom"]
-# print(getWinners(nom1,"person"))
-# print(getWinners(nom2,"person"))
-# print(getWinners(nom3,"movie"))
-# print(getWinners(nom4,"movie"))
-
-
-# print("BEST MOMENT", getBestMoment())
-
-# print("HOST", getHosts())
-
-# print(getBestandWorstDressed())
 
 
 
