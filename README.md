@@ -6,5 +6,8 @@ ex: python gg_api.py gg2013.json
 Results printed to terminal and stored in json file
 
 Required packages in requirements.txt
+Spacy, re, json, sys, fuzz, numpy, heapq
 
 Bonus Goals Completed: Best/Worst Dressed + Best Moment
+
+Github Repository link: https://github.com/alecpeltekian/CS337P1
