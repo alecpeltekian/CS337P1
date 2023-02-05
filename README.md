@@ -3,7 +3,7 @@ Solution located in "final" folder.
 To run: python gg_api.py {tweet file}
 ex: python gg_api.py gg2013.json
 
-Results printed to terminal and stored in json file
+Results printed to terminal and stored in "results.json" file
 
 Required packages in requirements.txt
 
